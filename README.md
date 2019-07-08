@@ -3,7 +3,7 @@ A generalised exhaustive CA rule searcher
 
 A collection of programs to find all the rules in which a pattern is an oscillator. Finds all isotropic two-state CA rules on the Moore neighbourhood in which the pattern of interest is an oscillator (within a fixed bounding box and maximum period). Uses a depth first search approach to exhaustively search the allowed rulespace.
 
-Original [http://conwaylife.com/forums/viewtopic.php?p=67136#p67136](two cell oscillator) search by Oscar Cunningham.
+Original [two cell oscillator](http://conwaylife.com/forums/viewtopic.php?p=67136#p67136) search by Oscar Cunningham.
 
 ## Adaptations:
 
