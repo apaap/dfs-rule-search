@@ -13,7 +13,10 @@ pop3osc.cpp - Adaptation to search a 3-cell pattern in a larger grid with a rest
 
 ## Helper scripts
 
-pop2osc-setrule.py - Python script to convert isotropic rule range to C function which sets the rule restriction in pop2osc.cpp
-Usage: $ python pop2osc-setrule.py "<minrule> - <maxrule>"
-The ouput will be a setrule() function which can be used in on of the rule search programs.
+pop2osc-setrule.py - Python script to convert isotropic rule range to C function which sets the rule restriction in pop2osc.cpp.
+Usage:
+
+```$ python pop2osc-setrule.py "<minrule> - <maxrule>"```
+
+The ouput will be a C function, setrule(), which can be used in on of the rule search programs.
 
