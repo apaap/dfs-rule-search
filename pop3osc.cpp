@@ -1,32 +1,33 @@
 // two-cell-oscillators.cpp by Oscar Cunningham, 2018
 // Modified by Arie Paap, 2019
-// pop3osc-rsrch.cpp - Three cell oscillator search with restricted rule transitions allowed
+// pop3osc.cpp - Three cell oscillator search with restricted rule transitions allowed
 // Transitions determined from 22gen of 3-cell p1731 oscillator
 
 #include <iostream>
 #include <algorithm>
 #include <string>
 #include <fstream>
+#include <cstdint>
 
 const int max_x = 30;
 const int max_y = 30;
 const int max_xy = 30; // max(max_x, max_y)
-const int max_t = 10000; 
+const int max_t = 20000; 
 const int minP = 400; // Minimum mod of oscillators output to resutls file
 const int number_of_transitions = 102;
 const std::string output_filename = "osc3-rsrch-30.csv";
-const std::string log_filename = "log3-rsrch";
+const std::string log_filename = "log3-rsrch.txt";
 const int reporting_interval = 20000000;
 
-int transition_from_cells(int parent_0,
-                          int parent_1,
-                          int parent_2,
-                          int parent_3,
-                          int parent_4,
-                          int parent_5,
-                          int parent_6,
-                          int parent_7,
-                          int parent_8){
+int transition_from_cells(int8_t parent_0,
+                          int8_t parent_1,
+                          int8_t parent_2,
+                          int8_t parent_3,
+                          int8_t parent_4,
+                          int8_t parent_5,
+                          int8_t parent_6,
+                          int8_t parent_7,
+                          int8_t parent_8){
   int index = (parent_0<<8)|(parent_1<<7)|(parent_2<<6)|(parent_3<<5)|(parent_4<<4)|(parent_5<<3)|(parent_6<<2)|(parent_7<<1)|parent_8;
   static const int lookup_table[512] = {0,1,2,6,1,3,6,13,2,5,4,17,6,14,12,22,1,8,5,16,3,9,14,24,6,16,17,30,13,24,22,35,2,5,7,18,5,15,18,29,4,11,10,27,17,21,28,37,6,16,18,31,14,25,23,41,12,26,28,39,22,40,36,45,1,3,5,14,8,9,16,24,5,15,11,21,16,25,26,40,3,9,15,25,9,19,25,33,14,25,21,34,24,33,40,43,6,14,18,23,16,25,31,41,17,21,27,38,30,34,39,44,13,24,29,41,24,33,41,46,22,40,37,44,35,43,45,49,2,6,4,12,5,14,17,22,7,18,10,28,18,23,28,36,5,16,11,26,15,25,21,40,18,31,27,39,29,41,37,45,4,17,10,28,11,21,27,37,10,27,20,32,27,38,32,42,17,30,27,39,21,34,38,44,28,39,32,47,37,44,42,48,6,13,17,22,16,24,30,35,18,29,27,37,31,41,39,45,14,24,21,40,25,33,34,43,23,41,38,44,41,46,44,49,12,22,28,36,26,40,39,45,28,37,32,42,39,44,47,48,22,35,37,45,40,43,44,49,36,45,42,48,45,49,48,50,51,52,53,57,52,54,57,64,53,56,55,68,57,65,63,73,52,59,56,67,54,60,65,75,57,67,68,81,64,75,73,86,53,56,58,69,56,66,69,80,55,62,61,78,68,72,79,88,57,67,69,82,65,76,74,92,63,77,79,90,73,91,87,96,52,54,56,65,59,60,67,75,56,66,62,72,67,76,77,91,54,60,66,76,60,70,76,84,65,76,72,85,75,84,91,94,57,65,69,74,67,76,82,92,68,72,78,89,81,85,90,95,64,75,80,92,75,84,92,97,73,91,88,95,86,94,96,100,53,57,55,63,56,65,68,73,58,69,61,79,69,74,79,87,56,67,62,77,66,76,72,91,69,82,78,90,80,92,88,96,55,68,61,79,62,72,78,88,61,78,71,83,78,89,83,93,68,81,78,90,72,85,89,95,79,90,83,98,88,95,93,99,57,64,68,73,67,75,81,86,69,80,78,88,82,92,90,96,65,75,72,91,76,84,85,94,74,92,89,95,92,97,95,100,63,73,79,87,77,91,90,96,79,88,83,93,90,95,98,99,73,86,88,96,91,94,95,100,87,96,93,99,96,100,99,101};
   // B0-0
@@ -202,7 +203,8 @@ std::string maxrulestring(int rule[number_of_transitions]){
   return rulestring_from_rule(maxrule);
 }
 
-int cells[max_t][max_xy+3][max_xy+3];
+// int8_t cells[max_t][max_xy+3][max_xy+3];
+
 
 int main(){
   std::ofstream output_file;
@@ -211,18 +213,25 @@ int main(){
   log_file.open(log_filename);
 
   // Grid of cells
-  for(int x = 0; x < max_xy+3; x++){
+  int8_t ***cells = new int8_t**[max_t];
+  /* for(int x = 0; x < max_xy+3; x++){
     for(int y = 0; y < max_xy+3; y++){
       for(int t = 0; t < max_t; t++){
         cells[t][y][x] = 0;
       }
     }
+  } */
+  for (int t = 0; t < max_t; ++t) {
+    cells[t] = new int8_t*[max_y+3];
+    for (int y = 0; y < max_y+3; ++y)
+      cells[t][y] = new int8_t[max_x+3]();
   }
+  // Starting pattern
   cells[0][0][0] = 1;
   cells[0][0][2] = 1;
 
   // Rules which apply at that generation (-1 if undetermined)
-  int rules[max_t][number_of_transitions];
+  static int rules[max_t][number_of_transitions];
   for(int t = 0; t < max_t; t++){
     for(int transition = 0; transition < number_of_transitions; transition++){
       rules[t][transition] = -1;
@@ -231,8 +240,8 @@ int main(){
   }
 
   // Bounding Box
-  int x_bound[max_t];
-  int y_bound[max_t];
+  static int x_bound[max_t];
+  static int y_bound[max_t];
   for(int t = 0; t < max_t; t++){
     x_bound[t] = y_bound[t] = 0;
   }
@@ -240,7 +249,7 @@ int main(){
   y_bound[0] = 1;
 
   // Which transitions need to be set
-  int new_transitions[max_t][number_of_transitions];
+  static int new_transitions[max_t][number_of_transitions];
   for(int t = 0; t < max_t; t++){
     for(int transition = 0; transition < number_of_transitions; transition++){
       new_transitions[t][transition] = -1;
@@ -248,13 +257,13 @@ int main(){
   }
 
   // Number of transitions needing to be set
-  int number_of_new_transitions[max_t];
+  static int number_of_new_transitions[max_t];
   for(int t = 0; t < max_t; t++){
     number_of_new_transitions[t] = -1;
   }
 
   // Integer < pow(2,number_of_new_transitions) to specify in binary which transitions to set
-  int transitions_to_set[max_t];
+  static int transitions_to_set[max_t];
   for(int t = 0; t < max_t; t++){
     transitions_to_set[t] = -1;
   }
