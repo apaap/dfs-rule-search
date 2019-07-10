@@ -1,0 +1,21 @@
+GOAL: Create a version of the oscillator search which has D2- symmetry in place of D4+ and 
+run a search for 3-cell oscillators with o$bo$o! as the starting pattern. This is likely to 
+give a reasonable set of results in a grid size constrained by the stack size (actually, 
+cells shouldn't be on the stack, but pop3osc segfaults when the cells array is too large).
+Assuming mirror axis on y=0, then max_x=60, max_y=30, max_t=2000 is doable. The initial 
+pattern should probably be placed near x=max_x/2.
+
+TODO: The main things to change to relax the symmetry assumption are:
+- The x_bound needs an x_bound_min and x_bound_max
+- The cell iterators should loop over x from x_bound_min instead of from 0
+- The two calls to transition_from_cells() should have the x==0 conditionals removed (they'll be redundant)
+- Remove the 90deg rotation check
+- And probably some of the backtracking tests need adjustment
+
+Then I think the next step will be to support spaceships by testing equality with the gen=0 pattern after allowing for n
+on-zero x displacement - similar to what you were doing with lifelib yesterday.
+Obviously this only searches for orthogonal spaceships, but i think it's a good step before relaxing the y-symmetry as w
+ell.
+
+Should implement dynamic allocation of the cells array so that it isn't limited by 
+
