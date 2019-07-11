@@ -11,9 +11,8 @@
 
 const int max_x = 60;
 const int max_y = 30;
-// const int max_xy = 30; // max(max_x, max_y)
 const int max_t = 2000; 
-const int minP = 200; // Minimum mod of oscillators output to resutls file
+const int minP = 200; // Minimum mod of oscillators output to results file
 const int number_of_transitions = 102;
 const std::string output_filename = "osc3_D2-_60.csv";
 const std::string log_filename = "log3_D2-_60.txt";
@@ -203,7 +202,7 @@ std::string maxrulestring(int rule[number_of_transitions]){
   return rulestring_from_rule(maxrule);
 }
 
-int cells[max_t][max_xy+3][max_xy+3];
+int cells[max_t][max_y+3][max_x+6];
 
 int main(){
   std::ofstream output_file;
@@ -212,15 +211,17 @@ int main(){
   log_file.open(log_filename);
 
   // Grid of cells
-  for(int x = 0; x < max_xy+3; x++){
-    for(int y = 0; y < max_xy+3; y++){
+  for(int x = 0; x < max_y+3; x++){
+    for(int y = 0; y < max_x+6; y++){
       for(int t = 0; t < max_t; t++){
         cells[t][y][x] = 0;
       }
     }
   }
-  cells[0][0][0] = 1;
-  cells[0][0][2] = 1;
+  // Centre of grid
+  int x0 = max_x/2 + 3;
+  cells[0][0][x0+1] = 1;
+  cells[0][1][x0] = 1;
 
   // Rules which apply at that generation (-1 if undetermined)
   int rules[max_t][number_of_transitions];
@@ -232,16 +233,17 @@ int main(){
   }
 
   // Bounding Box
-  int x_bound[max_t];
-  int y_bound[max_t];
+  static int x_bound[max_t][2];
+  static int y_bound[max_t];
   for(int t = 0; t < max_t; t++){
-    x_bound[t] = y_bound[t] = 0;
+    x_bound[t][0] = x_bound[t][1] = y_bound[t] = 0;
   }
-  x_bound[0] = 3;
-  y_bound[0] = 1;
+  x_bound[0][0] = x0-1;
+  x_bound[0][1] = x0+2;
+  y_bound[0] = 2;
 
   // Which transitions need to be set
-  int new_transitions[max_t][number_of_transitions];
+  static int new_transitions[max_t][number_of_transitions];
   for(int t = 0; t < max_t; t++){
     for(int transition = 0; transition < number_of_transitions; transition++){
       new_transitions[t][transition] = -1;
@@ -249,13 +251,13 @@ int main(){
   }
 
   // Number of transitions needing to be set
-  int number_of_new_transitions[max_t];
+  static int number_of_new_transitions[max_t];
   for(int t = 0; t < max_t; t++){
     number_of_new_transitions[t] = -1;
   }
 
   // Integer < pow(2,number_of_new_transitions) to specify in binary which transitions to set
-  int transitions_to_set[max_t];
+  static int transitions_to_set[max_t];
   for(int t = 0; t < max_t; t++){
     transitions_to_set[t] = -1;
   }
@@ -273,16 +275,17 @@ int main(){
       if(transitions_to_set[t] == -1){
         transitions_to_set[t] = 0;
 
-        for(int x=0; x<=x_bound[t]; x++){
+        // Check which transitions are required to evolve next generation
+        for(int x=x_bound[t][0]; x<=x_bound[t][1]; x++){
           for(int y=0; y<=y_bound[t]; y++){
             int transition = transition_from_cells(
               cells[t][y][x],
               cells[t][y][x+1],
               cells[t][y+1][x+1],
               cells[t][y+1][x],
-              x==0 ? cells[t][y+1][1] : cells[t][y+1][x-1],
-              x==0 ? cells[t][y][1] : cells[t][y][x-1],
-              x==0 ? (y==0 ? cells[t][1][1] : cells[t][y-1][1]) : (y==0 ? cells[t][1][x-1] : cells[t][y-1][x-1]),
+              cells[t][y+1][x-1],
+              cells[t][y][x-1],
+              y==0 ? cells[t][1][x-1] : cells[t][y-1][x-1],
               y==0 ? cells[t][1][x] : cells[t][y-1][x],
               y==0 ? cells[t][1][x+1] : cells[t][y-1][x+1]
             );
@@ -332,23 +335,24 @@ int main(){
 
       // Create new Grid
       for(int y=0; y<=y_bound[t]; y++){
-        for(int x=0; x<=x_bound[t]; x++){
+        for(int x=x_bound[t][0]; x<=x_bound[t][1]; x++){
 
           int transition = transition_from_cells(
             cells[t][y][x],
             cells[t][y][x+1],
             cells[t][y+1][x+1],
             cells[t][y+1][x],
-            x==0 ? cells[t][y+1][1] : cells[t][y+1][x-1],
-            x==0 ? cells[t][y][1] : cells[t][y][x-1],
-            x==0 ? (y==0 ? cells[t][1][1] : cells[t][y-1][1]) : (y==0 ? cells[t][1][x-1] : cells[t][y-1][x-1]),
+            cells[t][y+1][x-1],
+            cells[t][y][x-1],
+            y==0 ? cells[t][1][x-1] : cells[t][y-1][x-1],
             y==0 ? cells[t][1][x] : cells[t][y-1][x],
             y==0 ? cells[t][1][x+1] : cells[t][y-1][x+1]
           );
           // std::cout << transition << ",";
           cells[t+1][y][x] = rules[t+1][transition];
           if(cells[t+1][y][x]){
-            x_bound[t+1] = std::max(x+1,x_bound[t+1]);
+            x_bound[t+1][0] = std::min(x-1,x_bound[t+1][0]);
+            x_bound[t+1][1] = std::max(x+1,x_bound[t+1][1]);
             y_bound[t+1] = std::max(y+1,y_bound[t+1]);
           }
         }
@@ -374,7 +378,7 @@ int main(){
       bool backtrack_flag = false;
 
       // Check if pattern is empty
-      if(!x_bound[t]){
+      if(!x_bound[t][0]){
         // std::cout << "Empty" << std::endl;
         backtrack_flag = true;
       }
@@ -387,8 +391,14 @@ int main(){
         }
       }
       if(!backtrack_flag){
-        if(x_bound[t] > max_x){
-          // std::cout << "Out of space (x), t=" << t << ", " << minrulestring(rules[t]) << ", " << maxrulestring(rules[t]) << std::endl;
+        if(x_bound[t][0] < 3){
+          // std::cout << "Out of space (x_min), t=" << t << ", " << minrulestring(rules[t]) << ", " << maxrulestring(rules[t]) << std::endl;
+          backtrack_flag = true;
+        }
+      }
+      if(!backtrack_flag){
+        if(x_bound[t][1] > max_x+3){
+          // std::cout << "Out of space (x_max), t=" << t << ", " << minrulestring(rules[t]) << ", " << maxrulestring(rules[t]) << std::endl;
           backtrack_flag = true;
         }
       }
