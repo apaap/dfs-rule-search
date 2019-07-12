@@ -12,7 +12,7 @@
 const int max_x = 60;
 const int max_y = 30;
 const int max_t = 2000; 
-const int minP = 200; // Minimum mod of oscillators output to results file
+const int minP = 20; // Minimum mod of oscillators output to results file
 const int number_of_transitions = 102;
 const std::string output_filename = "osc3_D2-_60.csv";
 const std::string log_filename = "log3_D2-_60.txt";
@@ -301,7 +301,7 @@ int main(){
       // std::cout << std::endl;
       // std::cout << "Parent pattern: (t=" << t << ")" << std::endl;
       // for(int y = 0; y<y_bound[t]; y++){
-      //   for(int x = x_bound[t][0]; x<x_bound[t][1]; x++){
+      //   for(int x = x_bound[t][0]+1; x<x_bound[t][1]; x++){
       //     std::cout << cells[t][y][x];
       //   }
       //   std::cout << std::endl;
@@ -314,6 +314,7 @@ int main(){
       transitions_to_set[t]++;
 
       // Create new Grid
+      x_bound[t+1][0] = max_x+3;
       for(int y=0; y<=y_bound[t]; y++){
         for(int x=x_bound[t][0]; x<=x_bound[t][1]; x++){
 
@@ -349,7 +350,7 @@ int main(){
       // std::cout << std::endl;
       // std::cout << "Child pattern: (t=" << t << ")" << std::endl;
       // for(int y = 0; y<y_bound[t]; y++){
-      //   for(int x = x_bound[t][0]; x<x_bound[t][1]; x++){
+      //   for(int x = x_bound[t][0]+1; x<x_bound[t][1]; x++){
       //     std::cout << cells[t][y][x];
       //   }
       //   std::cout << std::endl;
@@ -566,6 +567,7 @@ int main(){
           transitions_to_set[t] = -1;
           if(t){
             t--;
+            // std::cout << "Backtracking, t = " << t << std::endl;
           } else {
             std::cout << std::endl;
             std::cout << "Search complete" << std::endl;
