@@ -2,7 +2,7 @@
 // Modified by Arie Paap, 2019
 // pop3osc_D2-.cpp - Three cell oscillator search with restricted rule transitions allowed
 // First attempt at removing symmetry constraints in order to allow spaceship searches
-// Transitions determined from 22gen of 3-cell p1731 oscillator
+// Transitions determined from 10gen of 3-cell p364 oscillator
 
 #include <iostream>
 #include <algorithm>
@@ -55,85 +55,65 @@ void setrule(int rule[number_of_transitions]){
   rule[3] = 1; // B2c
   rule[4] = 1; // B2e
   rule[7] = 1; // B2i
-  rule[5] = 1; // B2k
-  rule[8] = 1; // B2n
-  rule[12] = 1; // B3a
-  rule[10] = 1; // B3e
-  rule[13] = 1; // B3i
-  rule[16] = 1; // B3q
+  rule[22] = 1; // B4a
   rule[20] = 1; // B4e
-  rule[23] = 1; // B4i
-  rule[24] = 1; // B4n
-  rule[26] = 1; // B4q
+  rule[27] = 1; // B4j
   rule[28] = 1; // B4r
-  rule[40] = 1; // B5j
-  rule[37] = 1; // B5n
-  rule[46] = 1; // B6i
+  rule[41] = 1; // B5r
+  rule[38] = 1; // B5y
+  rule[42] = 1; // B6c
   // s_need
   rule[51] = 1; // S0
-  rule[54] = 1; // S2c
-  rule[58] = 1; // S2i
-  rule[59] = 1; // S2n
-  rule[63] = 1; // S3a
+  rule[52] = 1; // S1c
+  rule[57] = 1; // S2a
+  rule[56] = 1; // S2k
+  rule[60] = 1; // S3c
   rule[61] = 1; // S3e
-  rule[62] = 1; // S3k
-  rule[69] = 1; // S3r
-  rule[73] = 1; // S4a
+  rule[64] = 1; // S3i
+  rule[68] = 1; // S3j
+  rule[65] = 1; // S3n
+  rule[67] = 1; // S3q
   rule[70] = 1; // S4c
   rule[71] = 1; // S4e
-  rule[83] = 1; // S5c
-  rule[87] = 1; // S5i
+  rule[74] = 1; // S4i
+  rule[79] = 1; // S4r
+  rule[80] = 1; // S4t
+  rule[82] = 1; // S4z
   rule[91] = 1; // S5j
+  rule[90] = 1; // S5q
   rule[89] = 1; // S5y
-  rule[101] = 1; // S8
+  rule[93] = 1; // S6c
   // b_forbid
   rule[49] = 0; // B7e
   rule[29] = 0; // B4t
-  rule[25] = 0; // B4y
-  rule[45] = 0; // B6a
-  rule[48] = 0; // B7c
-  rule[44] = 0; // B6k
-  rule[22] = 0; // B4a
-  rule[21] = 0; // B4k
-  rule[27] = 0; // B4j
+  rule[19] = 0; // B4c
   rule[2] = 0; // B1e
   rule[1] = 0; // B1c
   rule[6] = 0; // B2a
-  rule[38] = 0; // B5y
-  rule[15] = 0; // B3y
-  rule[41] = 0; // B5r
-  rule[39] = 0; // B5q
-  rule[18] = 0; // B3r
+  rule[32] = 0; // B5c
+  rule[46] = 0; // B6i
+  rule[23] = 0; // B4i
   rule[14] = 0; // B3n
   rule[36] = 0; // B5i
   rule[0] = 0; // B0
+  rule[13] = 0; // B3i
   rule[17] = 0; // B3j
-  rule[11] = 0; // B3k
-  rule[33] = 0; // B5e
-  rule[9] = 0; // B3c
+  rule[10] = 0; // B3e
+  rule[50] = 0; // B8
+  rule[12] = 0; // B3a
   // s_forbid
-  rule[57] = 0; // S2a
+  rule[54] = 0; // S2c
   rule[100] = 0; // S7e
-  rule[56] = 0; // S2k
+  rule[73] = 0; // S4a
   rule[75] = 0; // S4n
-  rule[78] = 0; // S4j
-  rule[80] = 0; // S4t
-  rule[81] = 0; // S4w
-  rule[77] = 0; // S4q
   rule[55] = 0; // S2e
+  rule[84] = 0; // S5e
   rule[88] = 0; // S5n
-  rule[99] = 0; // S7c
-  rule[93] = 0; // S6c
-  rule[52] = 0; // S1c
+  rule[87] = 0; // S5i
+  rule[92] = 0; // S5r
   rule[97] = 0; // S6i
-  rule[96] = 0; // S6a
-  rule[66] = 0; // S3y
-  rule[67] = 0; // S3q
-  rule[65] = 0; // S3n
-  rule[64] = 0; // S3i
   rule[53] = 0; // S1e
-  rule[68] = 0; // S3j
-  rule[60] = 0; // S3c
+  rule[63] = 0; // S3a
 }
 
 std::string rulestring_from_rule(int rule[number_of_transitions]){
@@ -211,8 +191,8 @@ int main(){
   log_file.open(log_filename);
 
   // Grid of cells
-  for(int x = 0; x < max_y+3; x++){
-    for(int y = 0; y < max_x+6; y++){
+  for(int x = 0; x < max_x+6; x++){
+    for(int y = 0; y < max_y+3; y++){
       for(int t = 0; t < max_t; t++){
         cells[t][y][x] = 0;
       }
@@ -224,7 +204,7 @@ int main(){
   cells[0][1][x0] = 1;
 
   // Rules which apply at that generation (-1 if undetermined)
-  int rules[max_t][number_of_transitions];
+  static int rules[max_t][number_of_transitions];
   for(int t = 0; t < max_t; t++){
     for(int transition = 0; transition < number_of_transitions; transition++){
       rules[t][transition] = -1;
@@ -321,7 +301,7 @@ int main(){
       // std::cout << std::endl;
       // std::cout << "Parent pattern: (t=" << t << ")" << std::endl;
       // for(int y = 0; y<y_bound[t]; y++){
-      //   for(int x = 0; x<x_bound[t]; x++){
+      //   for(int x = x_bound[t][0]; x<x_bound[t][1]; x++){
       //     std::cout << cells[t][y][x];
       //   }
       //   std::cout << std::endl;
@@ -369,7 +349,7 @@ int main(){
       // std::cout << std::endl;
       // std::cout << "Child pattern: (t=" << t << ")" << std::endl;
       // for(int y = 0; y<y_bound[t]; y++){
-      //   for(int x = 0; x<x_bound[t]; x++){
+      //   for(int x = x_bound[t][0]; x<x_bound[t][1]; x++){
       //     std::cout << cells[t][y][x];
       //   }
       //   std::cout << std::endl;
@@ -379,7 +359,7 @@ int main(){
 
       // Check if pattern is empty
       if(!x_bound[t][0]){
-        // std::cout << "Empty" << std::endl;
+        std::cout << "Empty" << std::endl;
         backtrack_flag = true;
       }
 
@@ -397,7 +377,7 @@ int main(){
         }
       }
       if(!backtrack_flag){
-        if(x_bound[t][1] > max_x+3){
+        if(x_bound[t][1] > max_x){
           // std::cout << "Out of space (x_max), t=" << t << ", " << minrulestring(rules[t]) << ", " << maxrulestring(rules[t]) << std::endl;
           backtrack_flag = true;
         }
@@ -408,16 +388,19 @@ int main(){
           backtrack_flag = true;
         }
       }
-      //Check if pattern is exploding
-      // Ignore this check when B2a forced 0
-      // x
-      if(!backtrack_flag && rules[0][6] != 0){
+      // Check if pattern is exploding
+      // Ignore these check unless the B2a transition is used
+      // TODO Needs updating after symmetry removal
+
+      // x - exploding in the +/- y-direction
+      if(!backtrack_flag && rules[t][6] == 1){
+        int ylim = y_bound[t]-1;
         if(rules[t][13] == 1){
-          // >= 2 adjacent
-          for(int x = 0; x+1<x_bound[t]; x++){
+          // B3i True and >= 2 adjacent
+          for(int x = x_bound[t][0]+1; x+1<x_bound[t][1]; x++){
             if(
-              (cells[t][y_bound[t]-1][x] == 1)
-              && (cells[t][y_bound[t]-1][x+1] == 1)
+              (cells[t][ylim][x] == 1)
+              && (cells[t][ylim][x+1] == 1)
             ){
               // std::cout << "Exploding 1" << std::endl;
               backtrack_flag = true;
@@ -425,13 +408,13 @@ int main(){
             }
           }
         } else if(rules[t][3] == 0){
-          // Exactly 2 adjacent
-          for(int x = 0; x+2<x_bound[t]; x++){
+          // B2c False and exactly 2 adjacent
+          for(int x = x_bound[t][0]; x+2<x_bound[t][1]; x++){
             if(
-              (cells[t][y_bound[t]-1][x] == 0)
-              && (cells[t][y_bound[t]-1][x+1] == 1)
-              && (cells[t][y_bound[t]-1][x+2] == 1)
-              && ((x+3 >= x_bound[t]) || (cells[t][y_bound[t]-1][x+3] == 0))
+              (cells[t][ylim][x] == 0)
+              && (cells[t][ylim][x+1] == 1)
+              && (cells[t][ylim][x+2] == 1)
+              && ((x+3 >= x_bound[t][1]) || (cells[t][ylim][x+3] == 0))
             ){
               // std::cout << "Exploding 2" << std::endl;
               backtrack_flag = true;
@@ -440,14 +423,14 @@ int main(){
           }
         } else {
           //dead,dead,alive,alive,dead,dead
-          for(int x = 0; x+3<x_bound[t]; x++){
+          for(int x = x_bound[t][0]-1; x+3<x_bound[t][1]; x++){
             if(
-              (cells[t][y_bound[t]-1][x] == 0)
-              && (cells[t][y_bound[t]-1][x+1] == 0)
-              && (cells[t][y_bound[t]-1][x+2] == 1)
-              && (cells[t][y_bound[t]-1][x+3] == 1)
-              && ((x+4 >= x_bound[t]) || (cells[t][y_bound[t]-1][x+4] == 0))
-              && ((x+5 >= x_bound[t]) || (cells[t][y_bound[t]-1][x+5] == 0))
+              (cells[t][ylim][x] == 0)
+              && (cells[t][ylim][x+1] == 0)
+              && (cells[t][ylim][x+2] == 1)
+              && (cells[t][ylim][x+3] == 1)
+              && ((x+4 >= x_bound[t][1]) || (cells[t][ylim][x+4] == 0))
+              && ((x+5 >= x_bound[t][1]) || (cells[t][ylim][x+5] == 0))
             ){
               // std::cout << "Exploding 3" << std::endl;
               backtrack_flag = true;
@@ -456,14 +439,15 @@ int main(){
           }
         }
       }
-      // y
-      if(!backtrack_flag && rules[0][6] != 0){
+      // y - eploding in the +ve x direction
+      if(!backtrack_flag && rules[t][6] != 0){
+        int xlim = x_bound[t][1]-1;
         if(rules[t][13] == 1){
-          // >= 2 adjacent
+          // B3i True and >= 2 adjacent
           for(int y = 0; y+1<y_bound[t]; y++){
             if(
-              (cells[t][y][x_bound[t]-1] == 1)
-              && (cells[t][y+1][x_bound[t]-1] == 1)
+              (cells[t][y][xlim] == 1)
+              && (cells[t][y+1][xlim] == 1)
             ){
               // std::cout << "Exploding 1" << std::endl;
               backtrack_flag = true;
@@ -471,13 +455,13 @@ int main(){
             }
           }
         } else if(rules[t][3] == 0){
-          // Exactly 2 adjacent
+          // B2c False and exactly 2 adjacent
           for(int y = 0; y+2<y_bound[t]; y++){
             if(
-              (cells[t][y][x_bound[t]-1] == 0)
-              && (cells[t][y+1][x_bound[t]-1] == 1)
-              && (cells[t][y+2][x_bound[t]-1] == 1)
-              && ((y+3 >= y_bound[t]) || (cells[t][y+3][x_bound[t]-1] == 0))
+              (cells[t][y][xlim] == 0)
+              && (cells[t][y+1][xlim] == 1)
+              && (cells[t][y+2][xlim] == 1)
+              && ((y+3 >= y_bound[t]) || (cells[t][y+3][xlim] == 0))
             ){
               // std::cout << "Exploding 2" << std::endl;
               backtrack_flag = true;
@@ -488,12 +472,12 @@ int main(){
           //dead,dead,alive,alive,dead,dead
           for(int y = 0; y+3<y_bound[t]; y++){
             if(
-              (cells[t][y][x_bound[t]-1] == 0)
-              && (cells[t][y+1][x_bound[t]-1] == 0)
-              && (cells[t][y+2][x_bound[t]-1] == 1)
-              && (cells[t][y+3][x_bound[t]-1] == 1)
-              && ((y+4 >= y_bound[t]) || (cells[t][y+4][x_bound[t]-1] == 0))
-              && ((y+5 >= y_bound[t]) || (cells[t][y+5][x_bound[t]-1] == 0))
+              (cells[t][y][xlim] == 0)
+              && (cells[t][y+1][xlim] == 0)
+              && (cells[t][y+2][xlim] == 1)
+              && (cells[t][y+3][xlim] == 1)
+              && ((y+4 >= y_bound[t]) || (cells[t][y+4][xlim] == 0))
+              && ((y+5 >= y_bound[t]) || (cells[t][y+5][xlim] == 0))
             ){
               // std::cout << "Exploding 3" << std::endl;
               backtrack_flag = true;
@@ -504,6 +488,7 @@ int main(){
       }
       // Check if pattern is repeating
       // Flipped
+      /* TODO This test needs updating after symmetry removal
       if(!backtrack_flag){
         for(int t_past = t; t_past >= 0; t_past--){
           if(!backtrack_flag){
@@ -530,14 +515,16 @@ int main(){
             }
           }
         }
-      }
+      } */
       // Not Flipped
       if(!backtrack_flag){
         for(int t_past = t-1; t_past >= 0; t_past--){
           if(!backtrack_flag){
-            if(x_bound[t]==x_bound[t_past] && y_bound[t]==y_bound[t_past]){
+            if(x_bound[t][0]==x_bound[t_past][0] &&
+               x_bound[t][1]==x_bound[t_past][1] &&
+               y_bound[t]==y_bound[t_past]){
               int equality_flag = true;
-              for(int x=0;x<x_bound[t];x++){
+              for(int x=x_bound[t][0]+1;x<x_bound[t][1];x++){
                 for(int y=0;y<y_bound[t];y++){
                   if(cells[t][y][x] != cells[t_past][y][x]){
                     equality_flag = false;
@@ -560,8 +547,9 @@ int main(){
         }
       }
       if(backtrack_flag){
+        // Reset current generation before backtracking
         while(true){
-          for(int x = 0; x < x_bound[t]; x++){
+          for(int x = x_bound[t][0]+1; x < x_bound[t][0]; x++){
             for(int y = 0; y < y_bound[t]; y++){
               cells[t][y][x] = 0;
             }
@@ -570,7 +558,7 @@ int main(){
             rules[t][transition] = -1;
           }
           setrule(rules[t]);
-          x_bound[t] = y_bound[t] = 0;
+          x_bound[t][0] = x_bound[t][1] = y_bound[t] = 0;
           for(int transition = 0; transition < number_of_transitions; transition++){
             new_transitions[t][transition] = -1;
           }
