@@ -6,16 +6,17 @@ Assuming mirror axis on y=0, then max_x=60, max_y=30, max_t=2000 is doable. The 
 pattern should probably be placed near x=max_x/2.
 
 TODO: The main things to change to relax the symmetry assumption are:
-- The x_bound needs an x_bound_min and x_bound_max
-- The cell iterators should loop over x from x_bound_min instead of from 0
-- The two calls to transition_from_cells() should have the x==0 conditionals removed (they'll be redundant)
-- Remove the 90deg rotation check
-- And probably some of the backtracking tests need adjustment
+X The x_bound needs an x_bound_min and x_bound_max
+X The cell iterators should loop over x from x_bound_min instead of from 0
+X The two calls to transition_from_cells() should have the x==0 conditionals removed (they'll be redundant)
+X Remove the 90deg rotation check
+? And probably some of the backtracking tests need adjustment
 
-Then I think the next step will be to support spaceships by testing equality with the gen=0 pattern after allowing for n
-on-zero x displacement - similar to what you were doing with lifelib yesterday.
-Obviously this only searches for orthogonal spaceships, but i think it's a good step before relaxing the y-symmetry as w
-ell.
+Then I think the next step will be to support spaceships by testing equality with the
+gen=0 pattern after allowing for non-zero x displacement - conditional on a population
+check at minimum. Possible optimisation is to check for stabilisation of initial pattern
+into an oscillator or different spaceship. Obviously this only searches for orthogonal
+spaceships, but it's a good step before relaxing the y-symmetry as well.
 
-Should implement dynamic allocation of the cells array so that it isn't limited by 
+Should implement dynamic allocation of the cells array so that it isn't limited by stack space.
 
